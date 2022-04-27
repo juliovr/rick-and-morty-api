@@ -13,7 +13,7 @@ import cl.julio.rickandmorty.util.Estado;
 import cl.julio.rickandmorty.util.StringUtil;
 
 @Service
-public class CharacterService {
+public class CharacterService implements ICharacterService {
 
     private ICharacterRepository characterRepository;
 
@@ -21,6 +21,7 @@ public class CharacterService {
         this.characterRepository = characterRepository;
     }
 
+    @Override
     public GetCharacterResponse getCharacterInfo(int id) {
         Estado<CharacterInfo> responseCharacterInfo = characterRepository.getCharacterInfo(id);
         if (responseCharacterInfo.conErrores()) {

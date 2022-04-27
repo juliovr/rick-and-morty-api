@@ -6,7 +6,7 @@ import cl.julio.rickandmorty.util.Estado;
 
 public interface ICharacterRepository {
 
-    public Estado<CharacterInfo> getCharacterInfo(int id);
-    public Estado<Location> getLocation(String url);
+    Estado<CharacterInfo> getCharacterInfo(int id);
+    Estado<Location> getLocation(String url);
 
 }

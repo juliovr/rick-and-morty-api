@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cl.julio.rickandmorty.model.GetCharacterResponse;
-import cl.julio.rickandmorty.service.CharacterService;
+import cl.julio.rickandmorty.service.ICharacterService;
 
 @RestController
 @RequestMapping("/character")
 public class CharacterRestController {
 
-    private CharacterService characterService;
+    private ICharacterService characterService;
     
-    public CharacterRestController(CharacterService characterService) {
+    public CharacterRestController(ICharacterService characterService) {
         this.characterService = characterService;
     }
     
