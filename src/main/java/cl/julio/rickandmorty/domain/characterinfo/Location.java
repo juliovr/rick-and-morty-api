@@ -1,4 +1,4 @@
-package cl.julio.rickandmorty.repository.api;
+package cl.julio.rickandmorty.domain.characterinfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class ApiLocation {
+public class Location {
 
     private int id;
     private String name = "";

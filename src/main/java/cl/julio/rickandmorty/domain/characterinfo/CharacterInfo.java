@@ -1,4 +1,4 @@
-package cl.julio.rickandmorty.repository.api;
+package cl.julio.rickandmorty.domain.characterinfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,15 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class ApiGetSingleCharacter {
+public class CharacterInfo {
 
     private int id;
     private String name = "";
     private String status = "";
     private String species = "";
     private String type = "";
-    private ApiNameUrl origin;
-    private ApiNameUrl location;
+    private NameUrl origin;
+    private NameUrl location;
     private List<String> episode = new ArrayList<>();
 
 }

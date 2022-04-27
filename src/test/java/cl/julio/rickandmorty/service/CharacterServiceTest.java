@@ -12,18 +12,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import cl.julio.rickandmorty.domain.characterinfo.CharacterInfo;
+import cl.julio.rickandmorty.domain.characterinfo.GetCharacterInfoException;
+import cl.julio.rickandmorty.domain.characterinfo.Location;
+import cl.julio.rickandmorty.domain.characterinfo.NameUrl;
 import cl.julio.rickandmorty.model.GetCharacterResponse;
-import cl.julio.rickandmorty.repository.CharacterRepository;
-import cl.julio.rickandmorty.repository.api.ApiGetSingleCharacter;
-import cl.julio.rickandmorty.repository.api.ApiLocation;
-import cl.julio.rickandmorty.repository.api.ApiNameUrl;
+import cl.julio.rickandmorty.repository.ICharacterRepository;
 import cl.julio.rickandmorty.util.Estado;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CharacterServiceTest {
 
     @Mock
-    private CharacterRepository characterRepository;
+    private ICharacterRepository characterRepository;
 
     private CharacterService characterService;
     
@@ -32,46 +33,46 @@ public class CharacterServiceTest {
         characterService = new CharacterService(characterRepository);
     }
     
-    private Estado<ApiGetSingleCharacter> generarApiCharacterInfoOkSinOrigin() {
-        ApiGetSingleCharacter apiCharacterInfo = new ApiGetSingleCharacter();
+    private Estado<CharacterInfo> generarApiCharacterInfoOkSinOrigin() {
+        CharacterInfo apiCharacterInfo = new CharacterInfo();
         apiCharacterInfo.setId(1);
         apiCharacterInfo.setName("nombre");
         apiCharacterInfo.setStatus("status");
         apiCharacterInfo.setSpecies("species");
         apiCharacterInfo.setType("type");
-        apiCharacterInfo.setOrigin(new ApiNameUrl());
-        apiCharacterInfo.setLocation(new ApiNameUrl());
+        apiCharacterInfo.setOrigin(new NameUrl());
+        apiCharacterInfo.setLocation(new NameUrl());
         apiCharacterInfo.setEpisode(Arrays.asList("episode 1", "episode 2"));
         
-        Estado<ApiGetSingleCharacter> estadoOk = new Estado<>();
+        Estado<CharacterInfo> estadoOk = new Estado<>();
         estadoOk.setData(apiCharacterInfo);
         
         return estadoOk;
     }
     
-    private Estado<ApiGetSingleCharacter> generarApiCharacterInfoOkConOrigin() {
-        ApiNameUrl origin = new ApiNameUrl();
+    private Estado<CharacterInfo> generarApiCharacterInfoOkConOrigin() {
+        NameUrl origin = new NameUrl();
         origin.setName("origin");
         origin.setUrl("url_origin");
         
-        ApiGetSingleCharacter apiCharacterInfo = new ApiGetSingleCharacter();
+        CharacterInfo apiCharacterInfo = new CharacterInfo();
         apiCharacterInfo.setId(1);
         apiCharacterInfo.setName("nombre");
         apiCharacterInfo.setStatus("status");
         apiCharacterInfo.setSpecies("species");
         apiCharacterInfo.setType("type");
         apiCharacterInfo.setOrigin(origin);
-        apiCharacterInfo.setLocation(new ApiNameUrl());
+        apiCharacterInfo.setLocation(new NameUrl());
         apiCharacterInfo.setEpisode(Arrays.asList("episode 1", "episode 2"));
         
-        Estado<ApiGetSingleCharacter> estadoOk = new Estado<>();
+        Estado<CharacterInfo> estadoOk = new Estado<>();
         estadoOk.setData(apiCharacterInfo);
         
         return estadoOk;
     }
     
-    private Estado<ApiGetSingleCharacter> generarApiCharacterInfoConError() {
-        Estado<ApiGetSingleCharacter> estadoError = new Estado<>();
+    private Estado<CharacterInfo> generarApiCharacterInfoConError() {
+        Estado<CharacterInfo> estadoError = new Estado<>();
         estadoError.setMensajeError("Error");
         
         return estadoError;
@@ -79,70 +80,68 @@ public class CharacterServiceTest {
     
     @Test
     public void consultarCharacterInfoSinOrigin() {
-        Estado<ApiGetSingleCharacter> responseCharacterInfo = generarApiCharacterInfoOkSinOrigin();
+        Estado<CharacterInfo> responseCharacterInfo = generarApiCharacterInfoOkSinOrigin();
         when(characterRepository.getCharacterInfo(1)).thenReturn(responseCharacterInfo);
         
-        Estado<GetCharacterResponse> characterInfo = characterService.getCharacterInfo(1);
+        GetCharacterResponse characterInfo = characterService.getCharacterInfo(1);
         
-        assertThat(characterInfo.getData().getId(), is(responseCharacterInfo.getData().getId()));
-        assertThat(characterInfo.getData().getName(), is(responseCharacterInfo.getData().getName()));
-        assertThat(characterInfo.getData().getStatus(), is(responseCharacterInfo.getData().getStatus()));
-        assertThat(characterInfo.getData().getSpecies(), is(responseCharacterInfo.getData().getSpecies()));
-        assertThat(characterInfo.getData().getType(), is(responseCharacterInfo.getData().getType()));
-        assertThat(characterInfo.getData().getEpisodeCount(), is(responseCharacterInfo.getData().getEpisode().size()));
+        assertThat(characterInfo.getId(), is(responseCharacterInfo.getData().getId()));
+        assertThat(characterInfo.getName(), is(responseCharacterInfo.getData().getName()));
+        assertThat(characterInfo.getStatus(), is(responseCharacterInfo.getData().getStatus()));
+        assertThat(characterInfo.getSpecies(), is(responseCharacterInfo.getData().getSpecies()));
+        assertThat(characterInfo.getType(), is(responseCharacterInfo.getData().getType()));
+        assertThat(characterInfo.getEpisodeCount(), is(responseCharacterInfo.getData().getEpisode().size()));
     }
     
-    @Test
+    @Test(expected = GetCharacterInfoException.class)
     public void errorAlObtenerCharacterInfoDesdeApi() {
-        Estado<ApiGetSingleCharacter> responseCharacterInfoConError = generarApiCharacterInfoConError();
+        Estado<CharacterInfo> responseCharacterInfoConError = generarApiCharacterInfoConError();
         when(characterRepository.getCharacterInfo(1)).thenReturn(responseCharacterInfoConError);
         
-        Estado<GetCharacterResponse> characterInfo = characterService.getCharacterInfo(1);
-        assertThat(characterInfo.conErrores(), is(true));
+        characterService.getCharacterInfo(1);
     }
     
-    @Test
+    @Test(expected = GetCharacterInfoException.class)
     public void consultarCharacterInfoConOrigenConError() {
-        Estado<ApiGetSingleCharacter> responseCharacterInfo = generarApiCharacterInfoOkConOrigin();
+        Estado<CharacterInfo> responseCharacterInfo = generarApiCharacterInfoOkConOrigin();
         when(characterRepository.getCharacterInfo(1)).thenReturn(responseCharacterInfo);
         
-        ApiNameUrl origin = responseCharacterInfo.getData().getOrigin();
-        Estado<ApiLocation> responseLocation = new Estado<>();
+        NameUrl origin = responseCharacterInfo.getData().getOrigin();
+        Estado<Location> responseLocation = new Estado<>();
         when(characterRepository.getLocation(origin.getUrl())).thenReturn(responseLocation);
         
-        Estado<GetCharacterResponse> characterInfo = characterService.getCharacterInfo(1);
-        assertThat(characterInfo.conErrores(), is(true));
+        characterService.getCharacterInfo(1);
     }
     
     @Test
     public void consultarCharacterInfoConOrigen() {
-        Estado<ApiGetSingleCharacter> responseCharacterInfo = generarApiCharacterInfoOkConOrigin();
+        Estado<CharacterInfo> responseCharacterInfo = generarApiCharacterInfoOkConOrigin();
         when(characterRepository.getCharacterInfo(1)).thenReturn(responseCharacterInfo);
         
-        ApiNameUrl origin = responseCharacterInfo.getData().getOrigin();
+        NameUrl origin = responseCharacterInfo.getData().getOrigin();
         
-        ApiLocation apiLocation = new ApiLocation();
+        Location apiLocation = new Location();
         apiLocation.setName("name");
         apiLocation.setUrl("url");
         apiLocation.setDimension("dimension");
         apiLocation.setResidents(Arrays.asList("resident 1", "resident 2"));
-        Estado<ApiLocation> responseLocation = new Estado<>();
+        Estado<Location> responseLocation = new Estado<>();
         responseLocation.setData(apiLocation);
         when(characterRepository.getLocation(origin.getUrl())).thenReturn(responseLocation);
         
-        Estado<GetCharacterResponse> characterInfo = characterService.getCharacterInfo(1);
+        GetCharacterResponse characterInfo = characterService.getCharacterInfo(1);
         
-        assertThat(characterInfo.getData().getId(), is(responseCharacterInfo.getData().getId()));
-        assertThat(characterInfo.getData().getName(), is(responseCharacterInfo.getData().getName()));
-        assertThat(characterInfo.getData().getStatus(), is(responseCharacterInfo.getData().getStatus()));
-        assertThat(characterInfo.getData().getSpecies(), is(responseCharacterInfo.getData().getSpecies()));
-        assertThat(characterInfo.getData().getType(), is(responseCharacterInfo.getData().getType()));
-        assertThat(characterInfo.getData().getEpisodeCount(), is(responseCharacterInfo.getData().getEpisode().size()));
+        assertThat(characterInfo.getId(), is(responseCharacterInfo.getData().getId()));
+        assertThat(characterInfo.getName(), is(responseCharacterInfo.getData().getName()));
+        assertThat(characterInfo.getStatus(), is(responseCharacterInfo.getData().getStatus()));
+        assertThat(characterInfo.getSpecies(), is(responseCharacterInfo.getData().getSpecies()));
+        assertThat(characterInfo.getType(), is(responseCharacterInfo.getData().getType()));
+        assertThat(characterInfo.getEpisodeCount(), is(responseCharacterInfo.getData().getEpisode().size()));
 
-        assertThat(characterInfo.getData().getOrigin().getName(), is(apiLocation.getName()));
-        assertThat(characterInfo.getData().getOrigin().getUrl(), is(apiLocation.getUrl()));
-        assertThat(characterInfo.getData().getOrigin().getDimension(), is(apiLocation.getDimension()));
-        assertThat(characterInfo.getData().getOrigin().getResidents(), is(apiLocation.getResidents()));
+        assertThat(characterInfo.getOrigin().getName(), is(apiLocation.getName()));
+        assertThat(characterInfo.getOrigin().getUrl(), is(apiLocation.getUrl()));
+        assertThat(characterInfo.getOrigin().getDimension(), is(apiLocation.getDimension()));
+        assertThat(characterInfo.getOrigin().getResidents(), is(apiLocation.getResidents()));
     }
     
 }

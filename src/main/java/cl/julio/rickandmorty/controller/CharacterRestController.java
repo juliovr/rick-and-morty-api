@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cl.julio.rickandmorty.model.GetCharacterResponse;
 import cl.julio.rickandmorty.service.CharacterService;
-import cl.julio.rickandmorty.util.Estado;
 
 @RestController
 @RequestMapping("/character")
@@ -21,12 +20,9 @@ public class CharacterRestController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCharacterInfo(@PathVariable int id) {
-        Estado<GetCharacterResponse> response = characterService.getCharacterInfo(id);
-        if (response.conErrores()) {
-            return ResponseEntity.internalServerError().body(response);
-        }
+    public ResponseEntity<GetCharacterResponse> getCharacterInfo(@PathVariable int id) {
+        GetCharacterResponse response = characterService.getCharacterInfo(id);
         
-        return ResponseEntity.ok(response.getData());
+        return ResponseEntity.ok(response);
     }
 }
