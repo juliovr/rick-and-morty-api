@@ -1,16 +1,16 @@
 package cl.julio.rickandmorty.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import cl.julio.rickandmorty.domain.characterinfo.CharacterInfo;
 import cl.julio.rickandmorty.domain.characterinfo.GetCharacterInfoException;
@@ -21,9 +21,10 @@ import cl.julio.rickandmorty.model.Origin;
 import cl.julio.rickandmorty.repository.ICharacterRepository;
 import cl.julio.rickandmorty.util.Estado;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CharacterServiceTest {
 
+    private static final int RICK_ID = 1;
     private static final Origin EMPTY_ORIGIN = new Origin();
     private static final Estado<Location> EMPTY_LOCATION_RESPONSE = new Estado<>();
         
@@ -32,7 +33,7 @@ public class CharacterServiceTest {
 
     private CharacterService characterService;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         characterService = new CharacterService(characterRepository);
     }
@@ -44,33 +45,39 @@ public class CharacterServiceTest {
         
         GetCharacterResponse characterInfo = characterService.getCharacterInfo(1);
         
-        assertThat(characterInfo.getId(), is(responseCharacterInfo.getData().getId()));
-        assertThat(characterInfo.getName(), is(responseCharacterInfo.getData().getName()));
-        assertThat(characterInfo.getStatus(), is(responseCharacterInfo.getData().getStatus()));
-        assertThat(characterInfo.getSpecies(), is(responseCharacterInfo.getData().getSpecies()));
-        assertThat(characterInfo.getType(), is(responseCharacterInfo.getData().getType()));
-        assertThat(characterInfo.getEpisodeCount(), is(responseCharacterInfo.getData().getEpisode().size()));
+        assertEquals(responseCharacterInfo.getData().getId(), characterInfo.getId());
+        assertEquals(responseCharacterInfo.getData().getName(), characterInfo.getName());
+        assertEquals(responseCharacterInfo.getData().getStatus(), characterInfo.getStatus());
+        assertEquals(responseCharacterInfo.getData().getSpecies(), characterInfo.getSpecies());
+        assertEquals(responseCharacterInfo.getData().getType(), characterInfo.getType());
+        assertEquals(responseCharacterInfo.getData().getEpisode().size(), characterInfo.getEpisodeCount());
         
-        assertThat(characterInfo.getOrigin(), is(EMPTY_ORIGIN));
+        assertEquals(EMPTY_ORIGIN, characterInfo.getOrigin());
     }
     
-    @Test(expected = GetCharacterInfoException.class)
+    @Test
     public void should_throw_error_if_cannot_get_character_info() {
         Estado<CharacterInfo> responseCharacterInfoConError = generarApiCharacterInfoConError();
-        when(characterRepository.getCharacterInfo(1)).thenReturn(responseCharacterInfoConError);
+        when(characterRepository.getCharacterInfo(RICK_ID)).thenReturn(responseCharacterInfoConError);
         
-        characterService.getCharacterInfo(1);
+        GetCharacterInfoException exceptionThrew = assertThrowsExactly(GetCharacterInfoException.class, () -> {
+            characterService.getCharacterInfo(RICK_ID);
+        });
+        assertEquals(exceptionThrew.getMessage(), "Ocurrió un error obteniendo la información del personaje '" + RICK_ID + "'");
     }
     
-    @Test(expected = GetCharacterInfoException.class)
+    @Test
     public void should_throw_error_when_trying_to_obtain_origin_from_character_who_must_have_an_origin() {
         Estado<CharacterInfo> responseCharacterInfo = generarApiCharacterInfoOkConOrigin();
-        when(characterRepository.getCharacterInfo(1)).thenReturn(responseCharacterInfo);
+        when(characterRepository.getCharacterInfo(RICK_ID)).thenReturn(responseCharacterInfo);
         
         NameUrl origin = responseCharacterInfo.getData().getOrigin();
         when(characterRepository.getLocation(origin.getUrl())).thenReturn(EMPTY_LOCATION_RESPONSE);
         
-        characterService.getCharacterInfo(1);
+        GetCharacterInfoException exceptionThrew = assertThrowsExactly(GetCharacterInfoException.class, () -> {
+            characterService.getCharacterInfo(RICK_ID);
+        });
+        assertEquals(exceptionThrew.getMessage(), "Ocurrió un error obteniendo la información de origen del personaje '" + RICK_ID + "'");
     }
     
     @Test
@@ -86,18 +93,18 @@ public class CharacterServiceTest {
         
         GetCharacterResponse characterInfo = characterService.getCharacterInfo(1);
         
-        assertThat(characterInfo.getId(), is(responseCharacterInfo.getData().getId()));
-        assertThat(characterInfo.getName(), is(responseCharacterInfo.getData().getName()));
-        assertThat(characterInfo.getStatus(), is(responseCharacterInfo.getData().getStatus()));
-        assertThat(characterInfo.getSpecies(), is(responseCharacterInfo.getData().getSpecies()));
-        assertThat(characterInfo.getType(), is(responseCharacterInfo.getData().getType()));
-        assertThat(characterInfo.getEpisodeCount(), is(responseCharacterInfo.getData().getEpisode().size()));
+        assertEquals(responseCharacterInfo.getData().getId(), characterInfo.getId());
+        assertEquals(responseCharacterInfo.getData().getName(), characterInfo.getName());
+        assertEquals(responseCharacterInfo.getData().getStatus(), characterInfo.getStatus());
+        assertEquals(responseCharacterInfo.getData().getSpecies(), characterInfo.getSpecies());
+        assertEquals(responseCharacterInfo.getData().getType(), characterInfo.getType());
+        assertEquals(responseCharacterInfo.getData().getEpisode().size(), characterInfo.getEpisodeCount());
 
         Location location = responseLocation.getData();
-        assertThat(characterInfo.getOrigin().getName(), is(location.getName()));
-        assertThat(characterInfo.getOrigin().getUrl(), is(location.getUrl()));
-        assertThat(characterInfo.getOrigin().getDimension(), is(location.getDimension()));
-        assertThat(characterInfo.getOrigin().getResidents(), is(location.getResidents()));
+        assertEquals(location.getName(), characterInfo.getOrigin().getName());
+        assertEquals(location.getUrl(), characterInfo.getOrigin().getUrl());
+        assertEquals(location.getDimension(), characterInfo.getOrigin().getDimension());
+        assertEquals(location.getResidents(), characterInfo.getOrigin().getResidents());
     }
     
     

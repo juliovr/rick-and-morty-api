@@ -13,7 +13,7 @@ import cl.julio.rickandmorty.service.ICharacterService;
 @RequestMapping("/character")
 public class CharacterRestController {
 
-    private ICharacterService characterService;
+    private final ICharacterService characterService;
     
     public CharacterRestController(ICharacterService characterService) {
         this.characterService = characterService;

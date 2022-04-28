@@ -15,7 +15,7 @@ import cl.julio.rickandmorty.util.StringUtil;
 @Service
 public class CharacterService implements ICharacterService {
 
-    private ICharacterRepository characterRepository;
+    private final ICharacterRepository characterRepository;
 
     public CharacterService(ICharacterRepository characterRepository) {
         this.characterRepository = characterRepository;
