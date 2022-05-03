@@ -1,4 +1,4 @@
-package cl.julio.rickandmorty.port;
+package cl.julio.rickandmorty.usecase;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -23,7 +23,7 @@ import cl.julio.rickandmorty.domain.model.Origin;
 import cl.julio.rickandmorty.util.State;
 
 @ExtendWith(MockitoExtension.class)
-public class ApiCharacterInfoServiceTest {
+public class FindCharacterByIdUseCaseTest {
 
     private static final int RICK_ID = 1;
     private static final Origin EMPTY_ORIGIN = new Origin();
