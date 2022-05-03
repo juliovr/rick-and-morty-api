@@ -1,4 +1,4 @@
-package cl.julio.rickandmorty.model;
+package cl.julio.rickandmorty.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,17 +9,17 @@ public class RestUtil {
 
     private static final RestTemplate REST_TEMPLATE = new RestTemplate();
     
-    public static <T> Estado<T> get(String url, Class<T> clase) {
+    public static <T> State<T> get(String url, Class<T> clase) {
         log.info("Consumiendo WS get -> URL: {}", url);
-        Estado<T> estado = new Estado<>();
+        State<T> state = new State<>();
         try {
             T response = REST_TEMPLATE.getForObject(url, clase);
-            estado.setData(response);
+            state.setData(response);
         } catch (Exception e) {
-            estado.setDetalleError(e.getMessage());
+            state.setErrorDetail(e.getMessage());
         }
         
-        return estado;
+        return state;
     }
     
 }

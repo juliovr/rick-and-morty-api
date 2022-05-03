@@ -1,11 +1,11 @@
-package cl.julio.rickandmorty.model;
+package cl.julio.rickandmorty.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
-public class GetCharacterResponse {
+public class CharacterInfo {
 
     private int id;
     private String name = "";
@@ -15,6 +15,6 @@ public class GetCharacterResponse {
     
     @JsonProperty("episode_count")
     private int episodeCount;
-    private Origin origin;
+    private Origin origin = new Origin();
 
 }

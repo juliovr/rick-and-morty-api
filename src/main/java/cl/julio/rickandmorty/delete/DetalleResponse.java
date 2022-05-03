@@ -1,4 +1,4 @@
-package cl.julio.rickandmorty.model;
+package cl.julio.rickandmorty.delete;
 
 import lombok.Data;
 

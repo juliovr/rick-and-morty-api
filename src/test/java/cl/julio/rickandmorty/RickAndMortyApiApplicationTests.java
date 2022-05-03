@@ -3,10 +3,10 @@ package cl.julio.rickandmorty;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+// @SpringBootTest
 class RickAndMortyApiApplicationTests {
 
-	@Test
+	// @Test
 	void contextLoads() {
 	}
 

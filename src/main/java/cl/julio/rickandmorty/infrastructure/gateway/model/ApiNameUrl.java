@@ -1,9 +1,9 @@
-package cl.julio.rickandmorty.domain.characterinfo;
+package cl.julio.rickandmorty.infrastructure.gateway.model;
 
 import lombok.Data;
 
 @Data
-public class NameUrl {
+public class ApiNameUrl {
 
     private String name = "";
     private String url = "";

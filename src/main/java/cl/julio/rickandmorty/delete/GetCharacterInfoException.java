@@ -1,4 +1,4 @@
-package cl.julio.rickandmorty.domain.characterinfo;
+package cl.julio.rickandmorty.delete;
 
 public class GetCharacterInfoException extends RuntimeException {
 
